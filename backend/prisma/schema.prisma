@@ -1,0 +1,68 @@
+// prisma/schema.prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED") // Bom para migrations e introspection
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  // ADICIONE ESTA LINHA:
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+model Usuario {
+  id                 Int                  @id @default(autoincrement())
+  nome               String
+  idRegistro         String?              @unique
+  email              String               @unique
+  senha_hash         String
+  pontuacao_total    Int                  @default(0)
+  nivel              Int                  @default(1)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  registrosAtividade RegistroAtividade[]
+  // refreshTokens   RefreshToken[]
+  // conquistas      UsuarioConquista[]
+
+  @@map("usuarios")
+}
+
+model RegistroAtividade {
+  id          Int       @id @default(autoincrement())
+  data_hora   DateTime  @default(now())
+  observacao  String?
+  usuario_id  Int
+  acao_id     Int
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  usuario     Usuario   @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  acao        AcaoSustentavel @relation(fields: [acao_id], references: [id], onDelete: Cascade)
+
+  @@map("registros_atividade")
+}
+
+model AcaoSustentavel {
+  id                 Int                  @id @default(autoincrement())
+  nome               String
+  descricao          String?
+  pontos             Int
+  categoria          String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  registrosAtividade RegistroAtividade[]
+  // desafios        DesafioAcao[]
+
+  @@map("acoes_sustentaveis")
+}
+
+model Dica {
+  id             Int      @id @default(autoincrement())
+  titulo         String
+  conteudo       String
+  categoria_dica String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("dicas")
+}
