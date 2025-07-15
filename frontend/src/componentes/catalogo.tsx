@@ -32,6 +32,18 @@ const AcaoCard: React.FC<{ acao: AcaoSustentavel }> = ({ acao }) => {
 const Catalogo: React.FC = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
+      {/* Cabeçalho */}
+      <header className="bg-green-700 text-white shadow-md">
+        <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">EcoTracker</h1>
+          <div className="flex items-center space-x-4">
+            <a href="#" className="font-bold hover:underline">Catálogo de Ações</a>
+            <button className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300">
+              Sair
+            </button>
+          </div>
+        </nav>
+      </header>
 
       {/* Conteúdo Principal */}
       <main className="container mx-auto px-6 py-12">
