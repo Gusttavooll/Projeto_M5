@@ -3,17 +3,26 @@ import express from 'express';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import cookieParser from "cookie-parser";
 
 import userRoutes from './api/users/userRoutes.js';
-// import authRoutes from './api/auth/authRoutes.js'; // << REMOVIDO
+import authRoutes from './api/auth/authRoutes.js';
 import acoesSustentaveisRoutes from './api/acoessustentaveis/acoesSustentaveisRoutes.js';
 import dicaRoutes from './api/dicas/dicasRoutes.js';
-import atividadeRoutes from './routes/AtividadeRoutes.js'; // Para Registros de Atividade
+import atividadeRoutes from './routes/AtividadeRoutes.js'; 
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors(
+  {
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    credentials: true,
+  }
+));
 app.use(express.json());
+app.use(cookieParser());
+
 
 const swaggerOptions = {
   definition: {
@@ -25,7 +34,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://localhost:${process.env.PORT || 3000}/api`, // A base da API
+        url: `http://localhost:${process.env.PORT || 3000}/api`, 
         description: 'Servidor de Desenvolvimento Local',
       },
     ],
@@ -38,9 +47,9 @@ const swaggerOptions = {
         UsuarioBase: { type: 'object', properties: { nome: { type: 'string', example: 'Maria Verde' }, email: { type: 'string', format: 'email', example: 'maria.verde@example.com' }, idRegistro: { type: 'string', nullable: true, example: 'MV2024XYZ' } } },
         NovoUsuario: { allOf: [ { $ref: '#/components/schemas/UsuarioBase' } ], type: 'object', required: ['nome', 'email', 'senha'], properties: { senha: { type: 'string', format: 'password', minLength: 6, example: 'Senha@123' } } },
         AtualizarUsuario: { type: 'object', properties: { nome: { type: 'string', minLength: 3 }, email: { type: 'string', format: 'email' }, senha: { type: 'string', format: 'password', minLength: 6, nullable: true }, idRegistro: { type: 'string', nullable: true } } },
-        UsuarioResposta: { allOf: [ { $ref: '#/components/schemas/UsuarioBase' } ], type: 'object', properties: { id: { type: 'integer', readOnly: true }, pontuacao_total: { type: 'integer', default: 0, readOnly: true }, nivel: { type: 'integer', default: 1, readOnly: true }, createdAt: { type: 'string', format: 'date-time', readOnly: true }, updatedAt: { type: 'string', format: 'date-time', readOnly: true } } },
-        // LoginCredenciais: { type: 'object', required: ['email', 'senha'], properties: { email: { type: 'string', format: 'email' }, senha: { type: 'string', format: 'password' } } }, // << REMOVIDO
-        // LoginResposta: { type: 'object', properties: { usuario: { $ref: '#/components/schemas/UsuarioResposta' }, token: { type: 'string' } } }, // << REMOVIDO
+        UsuarioResposta: { allOf: [ { $ref: '#/components/schemas/UsuarioBase' } ], type: 'object', properties: { id: { type: 'integer', readOnly: true }, pontuacao_total: { type: 'integer', default: 0, readOnly: true }, nivel: { type: 'integer', default: 1, readOnly: true }, role: { type: 'string', enum: ['USER', 'ADMIN'] }, createdAt: { type: 'string', format: 'date-time', readOnly: true }, updatedAt: { type: 'string', format: 'date-time', readOnly: true } } },
+        LoginCredenciais: { type: 'object', required: ['email', 'senha'], properties: { email: { type: 'string', format: 'email' }, senha: { type: 'string', format: 'password' } } },
+        LoginResposta: { type: 'object', properties: { message: { type: 'string' }, usuario: { $ref: '#/components/schemas/UsuarioResposta' } } },
         AcaoSustentavelEntrada: { type: 'object', required: ['nome', 'pontos'], properties: { nome: { type: 'string' }, descricao: { type: 'string', nullable: true }, pontos: { type: 'integer' }, categoria: { type: 'string', nullable: true } } },
         AcaoSustentavelResposta: { allOf: [ { $ref: '#/components/schemas/AcaoSustentavelEntrada' } ], type: 'object', properties: { id: { type: 'integer', readOnly: true }, createdAt: { type: 'string', format: 'date-time', readOnly: true }, updatedAt: { type: 'string', format: 'date-time', readOnly: true } } },
         DicaEntrada: { type: 'object', required: ['titulo', 'conteudo'], properties: { titulo: { type: 'string' }, conteudo: { type: 'string' }, categoria_dica: { type: 'string', nullable: true } } },
@@ -52,24 +61,24 @@ const swaggerOptions = {
   },
   apis: [
     './src/api/users/userRoutes.js',
-    // './src/api/auth/authRoutes.js',  // << REMOVIDO
+    './src/api/auth/authRoutes.js',
     './src/api/acoessustentaveis/acoesSustentaveisRoutes.js',
     './src/api/dicas/dicasRoutes.js',
-    './src/routes/AtividadeRoutes.js', // Para Registros de Atividade (confirme o caminho)
+    './src/routes/AtividadeRoutes.js', 
   ],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Rotas da API (o prefixo /api já está na server URL do Swagger)
+
 app.use('/usuarios', userRoutes);
-// app.use('/auth', authRoutes); // << REMOVIDO
+app.use('/auth', authRoutes);
 app.use('/acoes-sustentaveis', acoesSustentaveisRoutes);
 app.use('/dicas', dicaRoutes);
 app.use('/registros-atividades', atividadeRoutes);
 
-// Error handler global
+
 app.use((err, req, res, next) => {
   console.error('ERRO NA API:', err.message);
   const statusCode = err.statusCode || 500;

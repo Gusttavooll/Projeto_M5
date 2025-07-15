@@ -1,9 +1,7 @@
 // src/api/users/userRoutes.js
 import express from 'express';
 import * as userController from './userController.js';
-// O arquivo authMiddlewares.js está em src/api/auth/authMiddlewares.js
-// De src/api/users/ para src/api/auth/ é: ../auth/
-// <<<< LINHA DE IMPORT REMOVIDA
+import { authenticateToken, requireAdmin } from '../middlewares/auth.js';
 
 const router = express.Router();
 
@@ -53,7 +51,8 @@ router.post('/', userController.criar);
  *       500:
  *         description: Erro no servidor.
  */
-router.get('/', userController.listar); // <<<< "protegerRota" REMOVIDO
+// Protegido: Apenas usuários autenticados e com perfil de ADMIN podem listar todos os usuários.
+router.get('/', authenticateToken, requireAdmin, userController.listar);
 
 /**
  * @swagger
@@ -82,7 +81,8 @@ router.get('/', userController.listar); // <<<< "protegerRota" REMOVIDO
  *       500:
  *         description: Erro no servidor.
  */
-router.get('/:id', userController.buscarPorId); // <<<< "protegerRota" REMOVIDO
+// Protegido: Apenas usuários autenticados podem buscar por ID.
+router.get('/:id', authenticateToken, userController.buscarPorId);
 
 /**
  * @swagger
@@ -119,7 +119,8 @@ router.get('/:id', userController.buscarPorId); // <<<< "protegerRota" REMOVIDO
  *       500:
  *         description: Erro no servidor.
  */
-router.put('/:id', userController.atualizar); // <<<< "protegerRota" REMOVIDO
+// Protegido: Apenas usuários autenticados podem atualizar.
+router.put('/:id', authenticateToken, userController.atualizar);
 
 /**
  * @swagger
@@ -144,6 +145,7 @@ router.put('/:id', userController.atualizar); // <<<< "protegerRota" REMOVIDO
  *       500:
  *         description: Erro no servidor.
  */
-router.delete('/:id', userController.deletar); // <<<< "protegerRota" REMOVIDO
+// Protegido: Apenas usuários autenticados podem deletar.
+router.delete('/:id', authenticateToken, userController.deletar);
 
 export default router;

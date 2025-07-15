@@ -2,12 +2,12 @@
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL_UNPOOLED") // Bom para migrations e introspection
+  directUrl = env("DATABASE_URL_UNPOOLED") 
 }
 
 generator client {
   provider      = "prisma-client-js"
-  // ADICIONE ESTA LINHA:
+  
   binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
@@ -17,6 +17,7 @@ model Usuario {
   idRegistro         String?              @unique
   email              String               @unique
   senha_hash         String
+  role               Role                 @default(USER)
   pontuacao_total    Int                  @default(0)
   nivel              Int                  @default(1)
   createdAt          DateTime             @default(now())
@@ -65,4 +66,9 @@ model Dica {
   updatedAt      DateTime @updatedAt
 
   @@map("dicas")
+}
+
+enum Role {
+  USER
+  ADMIN
 }

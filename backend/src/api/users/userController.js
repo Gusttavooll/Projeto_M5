@@ -36,11 +36,11 @@ export async function atualizar(req, res, next) {
   try {
     const { id: idUsuarioAlvo } = req.params; // String
     const dadosAtualizacao = req.body;
-    
-    if (!req.usuarioLogado || !req.usuarioLogado.userId) {
-        throw new HttpError(401, 'Informações do usuário logado ausentes ou inválidas.');
+
+    // O middleware 'authenticateToken' já garante que req.user existe.
+    if (!req.user || !req.user.id) {
+      throw new HttpError(401, 'Informações do usuário logado ausentes ou inválidas.');
     }
-    const { userId: idUsuarioLogado } = req.usuarioLogado;
 
     // 1. Deixe o serviço tentar a operação.
     //    O userService.atualizarUsuario já valida:
@@ -56,7 +56,7 @@ export async function atualizar(req, res, next) {
     //    No nosso caso, a regra é "usuário só pode atualizar a si mesmo".
 
     // Se o ID alvo é diferente do ID do usuário logado, é uma tentativa de atualizar outro usuário.
-    if (Number(idUsuarioAlvo) !== idUsuarioLogado) {
+    if (req.user.role !== 'ADMIN' && Number(idUsuarioAlvo) !== req.user.id) {
       // Mesmo que o idUsuarioAlvo seja 'abc' ou '99999', Number(idUsuarioAlvo) não será igual a idUsuarioLogado.
       // Isso lançará 403 ANTES do serviço ter a chance de lançar 400 (ID inválido) ou 404 (não encontrado).
       // Esta é a causa das falhas nos testes de integração.
@@ -77,14 +77,13 @@ export async function deletar(req, res, next) {
   try {
     const { id: idUsuarioAlvo } = req.params;
 
-    if (!req.usuarioLogado || !req.usuarioLogado.userId) {
-        throw new HttpError(401, 'Informações do usuário logado ausentes ou inválidas.');
+    if (!req.user || !req.user.id) {
+      throw new HttpError(401, 'Informações do usuário logado ausentes ou inválidas.');
     }
-    const { userId: idUsuarioLogado } = req.usuarioLogado;
 
     // Mesma lógica do atualizar: o 403 será lançado se o ID do alvo não for do usuário logado,
     // antes que o serviço possa verificar se o ID é válido ou se o usuário existe.
-    if (Number(idUsuarioAlvo) !== idUsuarioLogado) {
+    if (req.user.role !== 'ADMIN' && Number(idUsuarioAlvo) !== req.user.id) {
       throw new HttpError(403, 'Você não tem permissão para deletar este usuário.');
     }
 

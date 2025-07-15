@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 
-// Função para gerar um número aleatório em um intervalo
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -14,16 +14,15 @@ function getRandomInt(min, max) {
 }
 
 
-// Função para pegar um elemento aleatório de um array
+
 function getRandomElement(arr) {
   if (!arr || arr.length === 0) return null;
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-
 async function main() {
   console.log(`🧹 Limpando banco de dados...`);
-  // Ordem de deleção é importante por causa das FKs
+  
   await prisma.registroAtividade.deleteMany({});
   await prisma.dica.deleteMany({});
   await prisma.acaoSustentavel.deleteMany({});
@@ -31,6 +30,20 @@ async function main() {
 
 
   console.log(`🌱 Iniciando seeding...`);
+
+
+  console.log('👑 Criando usuário ADMIN...');
+  const adminPassword = await bcrypt.hash("ADMIN123", 10);
+  const admin = await prisma.usuario.create({
+    data: {
+      nome: "Administrador",
+      email: "admin@example.com",
+      senha_hash: adminPassword,
+      role: "ADMIN",
+      idRegistro: "ADMINREG001",
+    },
+  });
+  console.log(`Usuário ADMIN criado com sucesso: ${admin.email}`);
 
 
   // --- Criar Usuários (Exemplo: 10 usuários) ---
