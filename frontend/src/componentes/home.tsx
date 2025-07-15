@@ -1,23 +1,21 @@
 import React from 'react';
-import { useForm } from 'react-hook-form'; // Importa useForm aqui
-import { AuthFormData } from '../types'; // Importa a interface de App.tsx
+import { useForm } from 'react-hook-form';
+import { AuthFormData } from '../types'; 
 
-// Interface para as props do componente Home
 interface HomeProps {
-  onAuthSuccess: () => void; // Função para notificar o App.tsx sobre o sucesso da autenticação
+  onAuthSuccess: () => void;
 }
 
 // Componente da página inicial (registro/login)
 const Home: React.FC<HomeProps> = ({ onAuthSuccess }) => {
-  // Inicializa useForm dentro do componente Home
   const { register, handleSubmit, reset, formState: { errors } } = useForm<AuthFormData>();
 
   // Função para simular o envio do formulário de registro/login
   const onSubmitAuth = async (data: AuthFormData) => {
     console.log("Dados de autenticação:", data);
-    // Simula uma chamada de API (substitua pela sua API real)
+    // substituir pela nossa API 
     try {
-      // Exemplo de chamada de API com fetch:
+      // chamada de API com fetch:
       // const response = await fetch('/api/auth', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
@@ -26,8 +24,7 @@ const Home: React.FC<HomeProps> = ({ onAuthSuccess }) => {
       // const result = await response.json();
       // console.log("Resposta da API:", result);
 
-      // Simulação de sucesso no login/registro
-      onAuthSuccess(); // Chama a função passada via props para atualizar o estado no App.tsx
+      onAuthSuccess(); 
     } catch (error) {
       console.error("Erro na autenticação:", error);
       alert('Erro ao tentar autenticar. Tente novamente.');
@@ -47,7 +44,7 @@ const Home: React.FC<HomeProps> = ({ onAuthSuccess }) => {
             <input
               type="text"
               placeholder="Nome"
-              {...register("name", { required: "Nome é obrigatório." })}
+              {...register("name", { required: "Nome é obrigatório.", minLength: { value: 3, message: "O nome deve conter pelo menos 3 caracteres." } })}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 transition duration-200"
             />
             {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}

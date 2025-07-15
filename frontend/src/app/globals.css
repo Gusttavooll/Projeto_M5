@@ -12,6 +12,25 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Estiliza todos os placeholders do site */
+input::placeholder,
+textarea::placeholder {
+  color: #555;        
+  opacity: 1;         
+}
+
+/* estiliza os próprios inputs para manter o contraste */
+input,
+textarea {
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
