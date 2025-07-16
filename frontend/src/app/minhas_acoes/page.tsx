@@ -41,9 +41,9 @@ export default function MinhasAcoes() {
         <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-6">
         <h1 className="text-4xl font-extrabold mb-8 text-center text-green-800">Minhas Ações Sustentáveis</h1>
             <div className="flex justify-center mb-6">
-                <button onClick={() => setCurrentPage('add-edit-action')} className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transform hover:scale-105 transition duration-300 ease-in-out">
-            Registrar Nova Ação
-        </button>
+                    <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transform hover:scale-105 transition duration-300 ease-in-out">
+                        Registrar Nova Ação
+                    </button>
         </div>
         {userActions.length === 0 ? (
         <p className="text-center text-gray-600 text-lg">Você ainda não registrou nenhuma ação. Comece agora!</p>
