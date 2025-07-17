@@ -13,8 +13,8 @@ export interface NavItemProps {
 }
 
 interface HeaderLogadoProps {
-isLoggedIn: boolean;
-  onLogout: () => void; // Função para lidar com o logout
+isLoggedIn?: boolean;
+  onLogout?: () => void; // Função para lidar com o logout
   onNavigate: (page: string) => void; // Função para lidar com a navegação interna
 }
 
