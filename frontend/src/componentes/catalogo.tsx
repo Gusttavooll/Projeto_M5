@@ -1,50 +1,77 @@
 'use client';
-import React from 'react';
-import { Leaf } from 'lucide-react'; 
+import React, { useEffect, useState } from 'react';
+import { Leaf } from 'lucide-react';
 import HeaderLogado from "@/componentes/Navbar";
+import { Action } from '../types'; 
 
-// Interface para definir a estrutura de cada ação sustentável
-interface AcaoSustentavel {
+
+interface AcaoSustentavelAPI {
   id: number;
-  nome: string;
+  nome: string; // Nome da ação
+  descricao?: string;
+  pontos: number;
+  categoria?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-// Dados de exemplo para as ações. Deve ser trocado pela rota da API
-const acoes: AcaoSustentavel[] = [
-  { id: 1, nome: 'Compostagem doméstica' },
-  { id: 2, nome: 'Reutilização de embalagens' },
-  { id: 3, nome: 'Economia de energia elétrica' },
-  { id: 4, nome: 'Consumo consciente de água' },
-  { id: 5, nome: 'Apoio a produtores locais' },
-  { id: 6, nome: 'Participação em mutirões de limpeza' },
-  { id: 7, nome: 'Uso de sacolas reutilizáveis' },
-  { id: 8, nome: 'Descarte correto de eletrônicos' },
-];
-
 // Componente do Card de Ação
-const AcaoCard: React.FC<{ acao: AcaoSustentavel }> = ({ acao }) => {
+const AcaoCard: React.FC<{ acao: AcaoSustentavelAPI }> = ({ acao }) => {
   return (
-    <div className="flex items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-gray-200">
-      <Leaf className="h-6 w-6 text-green-600 mr-4" />
-      <span className="text-gray-800 font-medium">{acao.nome}</span>
+    <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer border border-gray-200 text-center">
+      <Leaf className="h-8 w-8 text-green-600 mb-3" />
+      <h3 className="text-lg font-semibold text-gray-800 mb-1">{acao.nome}</h3>
+      {acao.categoria && <p className="text-sm text-gray-500 mb-2">Categoria: {acao.categoria}</p>}
+      {acao.descricao && <p className="text-sm text-gray-700 mb-2">{acao.descricao}</p>}
+      <p className="text-md font-bold text-green-700">Pontos: {acao.pontos}</p>
     </div>
   );
 };
 
 const Catalogo: React.FC = () => {
+  const [acoes, setAcoes] = useState<AcaoSustentavelAPI[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAcoes = async () => {
+      try {
+        const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+        const response = await fetch(`${apiBaseUrl}/acoes-sustentaveis`); // Sua rota para listar ações sustentáveis
+
+        if (!response.ok) {
+          throw new Error(`Erro ao carregar ações: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setAcoes(data); // Assume que a API retorna um array de ações
+      } catch (err: any) {
+        setError(err.message);
+        console.error("Erro ao buscar ações:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAcoes();
+  }, []); // O array vazio [] garante que o useEffect rode apenas uma vez ao montar o componente
+
+  if (loading) return <div className="text-center mt-8 text-gray-700">Carregando ações sustentáveis...</div>;
+  if (error) return <div className="text-center mt-8 text-red-600">Erro: {error}</div>;
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <HeaderLogado isLoggedIn={true} onLogout={() => {}} onNavigate={() => {}} />
 
-      {/* Conteúdo Principal */}
-      <main className="container mx-auto px-6 py-12">
-        <h2 className="text-4xl font-bold text-center text-green-800 mb-10">
-          Catálogo de Ações Sustentáveis
-        </h2>
+      <main className="container mx-auto p-4 py-8">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Catálogo de Ações Sustentáveis</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {acoes.map((acao) => (
-            <AcaoCard key={acao.id} acao={acao} />
-          ))}
+          {acoes.length > 0 ? (
+            acoes.map((acao) => (
+              <AcaoCard key={acao.id} acao={acao} />
+            ))
+          ) : (
+            <p className="col-span-full text-center text-gray-600">Nenhuma ação sustentável encontrada no momento.</p>
+          )}
         </div>
       </main>
     </div>
