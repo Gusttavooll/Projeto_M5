@@ -8,8 +8,8 @@ import { usePathname } from "next/navigation";
 
 // Definindo a interface diretamente no arquivo
 export interface NavItemProps {
-  url: string;
-  label: string;
+    url: string;
+    label: string;
 }
 
 interface HeaderLogadoProps {
