@@ -1,5 +1,5 @@
 
-
+Publicaçao do Linkedin : https://www.linkedin.com/posts/gustavo-alves-dev_desenvolvimentoweb-frontend-apiintegration-activity-7351682771154554880-LFwM?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFJqE88BU6Q-4GSSDnJXpIBPYKcQht4gljg
 
 
 -----
