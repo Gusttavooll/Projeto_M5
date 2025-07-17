@@ -13,7 +13,7 @@ export interface NavItemProps {
 }
 
 interface HeaderLogadoProps {
-isLoggedIn?: boolean;
+    isLoggedIn?: boolean;
   onLogout?: () => void; // Função para lidar com o logout
   onNavigate: (page: string) => void; // Função para lidar com a navegação interna
 }
@@ -60,7 +60,7 @@ return (
         <li>
             <button
             onClick={() => {
-                onLogout();
+               // onLogout && onLogout(); // Chama onLogout apenas se ela existir
                 setMenuOpen(false); // Fecha o menu mobile ao clicar
             }}
             className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 text-lg"
